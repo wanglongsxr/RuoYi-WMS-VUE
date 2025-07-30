@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">ruoyi-wms后台管理系统</h3>
+      <h3 class="title">仓储管理系统</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -58,33 +58,32 @@
           style="width:45%;"
           @click.native.prevent="handleTry"
         >
-          <span>获取体验账号</span>
+          <span>注册账号</span>
         </el-button>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
     </el-form>
-    <el-dialog
+    <!-- <el-dialog
       title="公众号二维码"
       v-model="dialogVisible"
       append-to-body
       :show-close="false"
       width="30%">
       <div style="text-align: center">
-        <span class="font-title-large"><span class="color-main font-extra-large">关注公众号</span>回复<span class="color-main font-extra-large">仓库</span>获取体验账号</span>
+        <span class="font-title-large">注册账号</span>
         <br>
-        <img src="@/assets/logo/gzh.jpg" width="160" height="160" style="margin-top: 10px">
       </div>
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="dialogConfirm">确定</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-dialog> -->
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2017-2024 ichengle.top 技术支持：关注“程序员诚哥”微信公众号，回复：支持</span>
+      <span>张三有限公司版权所有 ©2017-2027   沪ICP备4567830号-8</span>
     </div>
   </div>
 </template>
