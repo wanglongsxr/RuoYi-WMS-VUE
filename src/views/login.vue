@@ -56,31 +56,12 @@
           size="large"
           type="primary"
           style="width:45%;"
-          @click.native.prevent="handleTry"
+          @click="handleRegister"
         >
           <span>注册账号</span>
         </el-button>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
-        </div>
       </el-form-item>
     </el-form>
-    <!-- <el-dialog
-      title="公众号二维码"
-      v-model="dialogVisible"
-      append-to-body
-      :show-close="false"
-      width="30%">
-      <div style="text-align: center">
-        <span class="font-title-large">注册账号</span>
-        <br>
-      </div>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="dialogConfirm">确定</el-button>
-        </div>
-      </template>
-    </el-dialog> -->
     <!--  底部  -->
     <div class="el-login-footer">
       <span>张三有限公司版权所有 ©2017-2027   沪ICP备4567830号-8</span>
@@ -116,17 +97,7 @@ const codeUrl = ref("");
 const loading = ref(false);
 // 验证码开关
 const captchaEnabled = ref(true);
-// 注册开关
-const register = ref(false);
 const redirect = ref(undefined);
-const dialogVisible = ref(false);
-
-function handleTry(){
-  dialogVisible.value =true
-}
-function dialogConfirm(){
-  dialogVisible.value =false;
-}
 
 function handleLogin() {
   proxy.$refs.loginRef.validate(valid => {
@@ -155,6 +126,10 @@ function handleLogin() {
       });
     }
   });
+}
+
+function handleRegister() {
+  router.push({ path: '/register' });
 }
 
 function getCode() {
