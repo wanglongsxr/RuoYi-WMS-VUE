@@ -1,0 +1,406 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Vue 3 WMS仓库管理系统 - Cursor 开发规范
+
+## 项目概述
+本项目是基于 Vue 3、Vite、Element Plus 和 Pinia 构建的WMS（仓库管理系统），适用于企业级仓储物流管理。项目采用组件化、模块化开发模式，支持商品管理、库存管理、订单管理等核心业务功能。
+
+## 核心技术栈
+
+### 主要框架和工具
+- **Vue 3.2.45**：使用Vue 3的组合式API和选项式API混合开发
+- **Vite 3.2.3**：现代化构建工具，支持快速热重载
+- **Element Plus 2.2.27**：企业级UI组件库，提供丰富的业务组件
+- **Pinia 2.0.22**：Vue 3的状态管理库，替代Vuex
+- **Vue Router 4.1.4**：单页应用路由管理
+- **Axios 0.27.2**：HTTP请求库
+- **SCSS**：CSS预处理器，支持嵌套和变量
+
+### 特色功能依赖
+- **vue-plugin-hiprint 0.0.56**：打印模板功能，支持单据打印
+- **jsbarcode 3.11.6**：条形码生成
+- **qrcode 1.5.3**：二维码生成
+- **file-saver 2.0.5**：文件下载功能
+- **js-cookie 3.0.1**：Cookie管理
+
+## 代码规范
+
+### Vue组件规范
+
+#### 组件命名和结构
+- **组件名使用PascalCase**：如 `UserProfile`、`InventoryDetail`
+- **文件名使用kebab-case**：如 `user-profile.vue`、`inventory-detail.vue`
+- **组件内部混合使用Options API和Composition API**：
+  ```vue
+  <template>
+    <div class="app-container">
+      <el-card>
+        <el-form :model="queryParams" ref="queryFormRef" :inline="true">
+          <!-- 表单内容 -->
+        </el-form>
+      </el-card>
+    </div>
+  </template>
+
+  <script setup>
+  import { ref, computed } from 'vue'
+  
+  // 使用defineProps定义属性
+  const props = defineProps({
+    value: [Number, String, Array],
+    options: {
+      type: Array,
+      default: null
+    }
+  })
+  
+  // 使用defineEmits定义事件
+  const emit = defineEmits(['update:value', 'change'])
+  
+  // 响应式数据
+  const queryParams = ref({})
+  const loading = ref(false)
+  
+  // 计算属性
+  const filteredData = computed(() => {
+    // 计算逻辑
+  })
+  
+  // 方法
+  function handleQuery() {
+    // 查询逻辑
+  }
+  </script>
+  ```
+
+#### 模板规范
+- **使用Element Plus组件**：优先使用 `el-` 前缀的组件
+- **表单验证**：使用Element Plus的form validation
+- **国际化**：支持中文界面，使用Element Plus中文语言包
+- **响应式布局**：使用Element Plus的栅格系统
+
+### 状态管理规范
+
+#### Pinia Store结构
+```javascript
+import { defineStore } from 'pinia'
+
+const useUserStore = defineStore('user', {
+  state: () => ({
+    token: getToken(),
+    id: '',
+    name: '',
+    avatar: '',
+    roles: [],
+    permissions: []
+  }),
+  getters: {
+    // getter函数
+  },
+  actions: {
+    // 登录
+    login(userInfo) {
+      return new Promise((resolve, reject) => {
+        // 异步操作
+      })
+    }
+  }
+})
+
+export default useUserStore
+```
+
+#### Store模块化
+- **按业务模块划分**：`user.js`、`wms.js`、`permission.js`等
+- **统一导出**：在 `store/index.js` 中创建 Pinia 实例
+- **类型安全**：为state、getters、actions提供清晰的类型定义
+
+### API接口规范
+
+#### 接口文件组织
+```
+src/api/
+├── login.js          # 登录相关
+├── menu.js           # 菜单权限
+├── system/           # 系统管理
+│   ├── user.js
+│   ├── role.js
+│   └── config.js
+└── wms/              # WMS业务
+    ├── item.js       # 商品管理
+    ├── inventory.js  # 库存管理
+    └── warehouse.js  # 仓库管理
+```
+
+#### 请求封装
+- **统一请求拦截器**：自动添加token、处理重复提交
+- **统一响应处理**：错误码统一处理、文件下载支持
+- **基础配置**：
+  ```javascript
+  const service = axios.create({
+    baseURL: import.meta.env.VITE_APP_BASE_API,
+    timeout: 10000
+  })
+  ```
+
+### 路由配置规范
+
+#### 路由元信息
+```javascript
+{
+  path: '/wms/inventory',
+  component: Layout,
+  name: 'Inventory',
+  meta: {
+    title: '库存管理',
+    icon: 'inventory',
+    roles: ['admin', 'wms'],
+    permissions: ['wms:inventory:list']
+  }
+}
+```
+
+#### 权限控制
+- **角色权限**：`roles` 数组控制页面访问
+- **按钮权限**：`permissions` 数组控制操作权限
+- **动态路由**：根据用户权限动态生成菜单
+
+### 组件开发规范
+
+#### 全局组件
+项目已注册的全局组件：
+- `DictTag`：字典标签显示
+- `Pagination`：分页组件
+- `TreeSelect`：树形选择器
+- `FileUpload`：文件上传
+- `ImageUpload`：图片上传
+- `ImagePreview`：图片预览
+- `RightToolbar`：表格工具栏
+- `Editor`：富文本编辑器
+
+#### 业务组件
+WMS特有的业务组件：
+- `InventoryDetailSelect`：库存明细选择
+- `InventorySelect`：库存选择
+- `SkuSelect`：SKU选择
+- `WarehouseCascader`：仓库级联选择
+
+#### 组件通信
+- **父子组件**：使用 `props` 和 `emit`
+- **跨组件通信**：使用 Pinia store
+- **事件总线**：使用 `provide/inject` 或全局事件
+
+### 样式规范
+
+#### SCSS使用
+```scss
+// 变量定义
+$primary-color: #409eff;
+$border-radius: 4px;
+
+// 混入使用
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 组件样式
+.app-container {
+  padding: 20px;
+  
+  .el-card {
+    margin-bottom: 20px;
+  }
+}
+```
+
+#### Element Plus主题定制
+- **全局配置**：在main.js中配置locale和size
+- **样式覆盖**：通过SCSS变量定制主题色彩
+- **组件配置**：使用ElConfigProvider进行全局配置
+
+### 工具函数规范
+
+#### 全局工具函数
+```javascript
+// 挂载到全局的工具函数
+app.config.globalProperties.parseTime = parseTime
+app.config.globalProperties.resetForm = resetForm
+app.config.globalProperties.handleTree = handleTree
+app.config.globalProperties.download = download
+```
+
+#### 常用工具
+- **时间处理**：`parseTime` 格式化时间
+- **表单重置**：`resetForm` 重置表单数据
+- **树形数据处理**：`handleTree` 构建树形结构
+- **文件下载**：`download` 处理文件下载
+
+### 打印功能规范
+
+#### hiprint打印模板
+```javascript
+// 打印插件配置
+import { hiPrintPlugin } from 'vue-plugin-hiprint'
+app.use(hiPrintPlugin, '$hiprint', false)
+
+// 打印模板组件
+import receiptPanel from '@/components/PrintTemplate/receipt-panel.js'
+import shipmentPanel from '@/components/PrintTemplate/shipment-panel.js'
+```
+
+#### 条码二维码
+- **条形码生成**：使用 `jsbarcode` 生成商品条形码
+- **二维码生成**：使用 `qrcode` 生成库位二维码
+- **打印集成**：与hiprint模板结合实现单据打印
+
+## 开发规范
+
+### 文件命名规范
+- **Vue组件**：使用PascalCase，如 `ItemManagement.vue`
+- **JS/TS文件**：使用camelCase，如 `userService.js`
+- **样式文件**：使用kebab-case，如 `main-layout.scss`
+- **API文件**：按模块组织，使用camelCase
+
+### 代码注释规范
+```javascript
+/**
+ * 商品管理相关API
+ * @module ItemAPI
+ */
+
+/**
+ * 获取商品列表
+ * @param {Object} params - 查询参数
+ * @param {string} params.itemCode - 商品编号
+ * @param {string} params.itemName - 商品名称
+ * @returns {Promise} 返回商品列表数据
+ */
+export function getItemList(params) {
+  return request({
+    url: '/wms/item/list',
+    method: 'get',
+    params
+  })
+}
+```
+
+### 性能优化规范
+- **组件懒加载**：路由使用动态import
+- **图片懒加载**：使用Element Plus的image组件
+- **列表虚拟化**：大数据量表格使用虚拟滚动
+- **缓存策略**：合理使用keep-alive缓存页面
+
+### 错误处理规范
+- **全局错误处理**：request拦截器统一处理HTTP错误
+- **业务错误处理**：使用Element Plus的Message组件显示错误
+- **表单验证**：使用Element Plus的form validation
+
+### 环境配置
+```javascript
+// vite.config.js配置
+export default defineConfig({
+  base: env.VITE_APP_CONTEXT_PATH,
+  plugins: [
+    vue(),
+    createSvgIconsPlugin(),
+    // 其他插件
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
+  server: {
+    port: 80,
+    proxy: {
+      '/dev-api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/dev-api/, '')
+      }
+    }
+  }
+})
+```
+
+## 项目结构说明
+
+### 目录结构
+```
+src/
+├── api/              # API接口管理
+│   ├── system/       # 系统管理接口
+│   └── wms/          # WMS业务接口
+├── assets/           # 静态资源
+│   ├── icons/        # SVG图标
+│   ├── images/       # 图片资源
+│   └── styles/       # 全局样式
+├── components/       # 全局组件
+│   ├── PrintTemplate/ # 打印模板
+│   └── ...           # 其他全局组件
+├── layout/           # 布局组件
+├── plugins/          # 插件配置
+├── router/           # 路由配置
+├── store/            # Pinia状态管理
+│   └── modules/      # 模块化store
+├── utils/            # 工具函数
+├── views/            # 页面组件
+│   ├── components/   # 页面级组件
+│   ├── system/       # 系统管理页面
+│   └── wms/          # WMS业务页面
+└── App.vue           # 根组件
+```
+
+### 页面组件结构
+- **列表页面**：包含搜索表单、数据表格、分页组件
+- **详情页面**：展示详细信息，支持编辑操作
+- **表单页面**：新增/编辑表单，包含验证逻辑
+
+## 开发建议
+
+### 最佳实践
+1. **模块化开发**：按业务功能划分模块，避免代码耦合
+2. **组件复用**：提取公共组件，提高开发效率
+3. **类型安全**：使用TypeScript增强代码质量
+4. **性能监控**：关注首屏加载时间和运行时性能
+5. **用户体验**：合理使用Loading状态和Error提示
+
+### 调试工具
+- **Vue DevTools**：Vue组件调试
+- **Vite DevTools**：构建过程调试
+- **Element Plus DevTools**：组件状态查看
+- **Network面板**：API请求监控
+
+### 代码质量
+- **ESLint**：代码风格检查
+- **Prettier**：代码格式化
+- **Husky**：Git钩子检查
+- **单元测试**：关键业务逻辑测试
+
+## 业务特性说明
+
+### WMS核心功能
+- **商品管理**：商品信息、SKU管理、分类管理
+- **库存管理**：库存查询、库存明细、库存历史
+- **订单管理**：入库单、出库单、移库单、盘点单
+- **基础资料**：仓库管理、区域管理、供应商管理
+
+### 系统特色
+- **多仓库支持**：支持多个仓库的库存管理
+- **条码支持**：商品条码、库位二维码
+- **打印功能**：单据打印、标签打印
+- **权限管理**：角色权限、按钮权限控制
+
+
+
+此规范基于项目实际代码结构制定，请在开发过程中严格遵守，以确保代码质量和项目的可维护性。 
